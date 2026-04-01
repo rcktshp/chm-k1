@@ -10,7 +10,69 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
 </head>
 <body>
-  <div id="app">
+  <!-- Auth Screen -->
+  <div id="auth-screen" class="auth-screen">
+    <div class="auth-container">
+      <div class="auth-logo">
+        <svg class="auth-logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 6v6l4 2"/>
+        </svg>
+        <span class="auth-logo-text">KartLap</span>
+      </div>
+      <div class="racing-stripe"></div>
+
+      <!-- Sign In Form -->
+      <div class="auth-card" id="auth-signin">
+        <h2 class="auth-title">Sign In</h2>
+        <p class="auth-subtitle">Welcome back, racer</p>
+        <form id="signin-form">
+          <div class="auth-field">
+            <label for="signin-username">Username</label>
+            <input type="text" id="signin-username" placeholder="Enter username" required autocomplete="username" />
+          </div>
+          <div class="auth-field">
+            <label for="signin-password">Password</label>
+            <input type="password" id="signin-password" placeholder="Enter password" required autocomplete="current-password" />
+          </div>
+          <div class="auth-error hidden" id="signin-error"></div>
+          <button type="submit" class="btn btn-primary btn-lg auth-submit">Sign In</button>
+        </form>
+        <p class="auth-switch">Don't have an account? <a href="#" id="goto-signup">Sign Up</a></p>
+        <div class="auth-divider"><span>or</span></div>
+        <button class="btn btn-outline btn-lg auth-submit" id="guest-btn">Continue as Guest</button>
+      </div>
+
+      <!-- Sign Up Form -->
+      <div class="auth-card hidden" id="auth-signup">
+        <h2 class="auth-title">Create Account</h2>
+        <p class="auth-subtitle">Join the grid</p>
+        <form id="signup-form">
+          <div class="auth-field">
+            <label for="signup-username">Username</label>
+            <input type="text" id="signup-username" placeholder="Choose a username" required minlength="3" maxlength="20" autocomplete="username" />
+          </div>
+          <div class="auth-field">
+            <label for="signup-display">Display Name</label>
+            <input type="text" id="signup-display" placeholder="Your name (optional)" autocomplete="name" />
+          </div>
+          <div class="auth-field">
+            <label for="signup-password">Password</label>
+            <input type="password" id="signup-password" placeholder="Create a password" required minlength="4" autocomplete="new-password" />
+          </div>
+          <div class="auth-field">
+            <label for="signup-confirm">Confirm Password</label>
+            <input type="password" id="signup-confirm" placeholder="Confirm password" required autocomplete="new-password" />
+          </div>
+          <div class="auth-error hidden" id="signup-error"></div>
+          <button type="submit" class="btn btn-primary btn-lg auth-submit">Create Account</button>
+        </form>
+        <p class="auth-switch">Already have an account? <a href="#" id="goto-signin">Sign In</a></p>
+      </div>
+    </div>
+  </div>
+
+  <div id="app" class="hidden">
     <!-- Sidebar Navigation -->
     <nav class="sidebar" id="sidebar">
       <div class="sidebar-header">
@@ -48,6 +110,13 @@
         </a></li>
       </ul>
       <div class="sidebar-footer">
+        <div class="sidebar-user" id="sidebar-user">
+          <div class="user-avatar" id="user-avatar">?</div>
+          <div class="user-info">
+            <span class="user-name" id="user-display-name">Guest</span>
+            <span class="user-tag" id="user-tag">@guest</span>
+          </div>
+        </div>
         <button class="btn btn-outline btn-sm" id="export-btn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           Export
@@ -57,6 +126,10 @@
           Import
         </button>
         <input type="file" id="import-file" accept=".json" hidden />
+        <button class="btn btn-danger-outline btn-sm" id="signout-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Sign Out
+        </button>
       </div>
     </nav>
 

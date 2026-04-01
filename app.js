@@ -6,18 +6,187 @@
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "kartlap_sessions";
+  // ── Auth System ─────────────────────────────────────────
+  const AUTH_USERS_KEY = "kartlap_users";
+  const AUTH_SESSION_KEY = "kartlap_auth";
+
+  async function hashPassword(password) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(password);
+    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+  }
+
+  function getUsers() {
+    try {
+      return JSON.parse(localStorage.getItem(AUTH_USERS_KEY)) || {};
+    } catch {
+      return {};
+    }
+  }
+
+  function saveUsers(users) {
+    localStorage.setItem(AUTH_USERS_KEY, JSON.stringify(users));
+  }
+
+  function getAuthSession() {
+    try {
+      return JSON.parse(localStorage.getItem(AUTH_SESSION_KEY));
+    } catch {
+      return null;
+    }
+  }
+
+  function setAuthSession(user) {
+    localStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(user));
+  }
+
+  function clearAuthSession() {
+    localStorage.removeItem(AUTH_SESSION_KEY);
+  }
+
+  let currentUser = null;
+
+  function storageKeyForUser(username) {
+    if (!username || username === "__guest__") return "kartlap_sessions";
+    return `kartlap_sessions_${username}`;
+  }
 
   function loadSessions() {
+    const key = storageKeyForUser(currentUser?.username);
     try {
-      return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+      return JSON.parse(localStorage.getItem(key)) || [];
     } catch {
       return [];
     }
   }
 
   function saveSessions(s) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
+    const key = storageKeyForUser(currentUser?.username);
+    localStorage.setItem(key, JSON.stringify(s));
+  }
+
+  const $q = (sel) => document.querySelector(sel);
+
+  // Auth UI
+  const authScreen = $q("#auth-screen");
+  const appEl = $q("#app");
+  const signinCard = $q("#auth-signin");
+  const signupCard = $q("#auth-signup");
+  const signinError = $q("#signin-error");
+  const signupError = $q("#signup-error");
+
+  function showAuthError(el, msg) {
+    el.textContent = msg;
+    el.classList.remove("hidden");
+  }
+
+  function hideAuthError(el) {
+    el.classList.add("hidden");
+  }
+
+  $q("#goto-signup").addEventListener("click", (e) => {
+    e.preventDefault();
+    signinCard.classList.add("hidden");
+    signupCard.classList.remove("hidden");
+    hideAuthError(signinError);
+    hideAuthError(signupError);
+  });
+
+  $q("#goto-signin").addEventListener("click", (e) => {
+    e.preventDefault();
+    signupCard.classList.add("hidden");
+    signinCard.classList.remove("hidden");
+    hideAuthError(signinError);
+    hideAuthError(signupError);
+  });
+
+  $q("#signin-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    hideAuthError(signinError);
+    const username = $q("#signin-username").value.trim().toLowerCase();
+    const password = $q("#signin-password").value;
+    if (!username || !password) { showAuthError(signinError, "All fields are required."); return; }
+
+    const users = getUsers();
+    const user = users[username];
+    if (!user) { showAuthError(signinError, "Account not found."); return; }
+
+    const hash = await hashPassword(password);
+    if (hash !== user.passwordHash) { showAuthError(signinError, "Incorrect password."); return; }
+
+    currentUser = { username, displayName: user.displayName };
+    setAuthSession(currentUser);
+    enterApp();
+  });
+
+  $q("#signup-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    hideAuthError(signupError);
+    const username = $q("#signup-username").value.trim().toLowerCase();
+    const displayName = $q("#signup-display").value.trim() || username;
+    const password = $q("#signup-password").value;
+    const confirm = $q("#signup-confirm").value;
+
+    if (!username || !password) { showAuthError(signupError, "Username and password are required."); return; }
+    if (username.length < 3) { showAuthError(signupError, "Username must be at least 3 characters."); return; }
+    if (!/^[a-z0-9_]+$/.test(username)) { showAuthError(signupError, "Username: lowercase letters, numbers, underscores only."); return; }
+    if (password.length < 4) { showAuthError(signupError, "Password must be at least 4 characters."); return; }
+    if (password !== confirm) { showAuthError(signupError, "Passwords don't match."); return; }
+
+    const users = getUsers();
+    if (users[username]) { showAuthError(signupError, "Username already taken."); return; }
+
+    const hash = await hashPassword(password);
+    users[username] = { displayName, passwordHash: hash, createdAt: new Date().toISOString() };
+    saveUsers(users);
+
+    currentUser = { username, displayName };
+    setAuthSession(currentUser);
+    enterApp();
+  });
+
+  $q("#guest-btn").addEventListener("click", () => {
+    currentUser = { username: "__guest__", displayName: "Guest" };
+    setAuthSession(currentUser);
+    enterApp();
+  });
+
+  function enterApp() {
+    authScreen.classList.add("hidden");
+    appEl.classList.remove("hidden");
+    updateUserUI();
+    sessions = loadSessions();
+    renderDashboard();
+    $q("#session-date").value = new Date().toISOString().split("T")[0];
+  }
+
+  function updateUserUI() {
+    if (!currentUser) return;
+    const name = currentUser.displayName || currentUser.username;
+    const isGuest = currentUser.username === "__guest__";
+    $q("#user-display-name").textContent = name;
+    $q("#user-tag").textContent = isGuest ? "guest" : `@${currentUser.username}`;
+    $q("#user-avatar").textContent = name.charAt(0).toUpperCase();
+  }
+
+  $q("#signout-btn").addEventListener("click", () => {
+    clearAuthSession();
+    currentUser = null;
+    appEl.classList.add("hidden");
+    authScreen.classList.remove("hidden");
+    $q("#signin-username").value = "";
+    $q("#signin-password").value = "";
+    hideAuthError(signinError);
+    signinCard.classList.remove("hidden");
+    signupCard.classList.add("hidden");
+  });
+
+  // Check for existing session on load
+  const existingAuth = getAuthSession();
+  if (existingAuth) {
+    currentUser = existingAuth;
   }
 
   let sessions = loadSessions();
@@ -1219,6 +1388,10 @@
   }
 
   // ── Init ────────────────────────────────────────────────
-  renderDashboard();
-  $("#session-date").value = new Date().toISOString().split("T")[0];
+  if (currentUser) {
+    enterApp();
+  } else {
+    authScreen.classList.remove("hidden");
+    appEl.classList.add("hidden");
+  }
 })();
