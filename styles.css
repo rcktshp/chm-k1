@@ -1,36 +1,38 @@
 /* ============================================================
    KartLap — Go Kart Lap Times Tracker
-   Black / White / Red Racing Theme
+   K1 Speed Inspired Color Scheme
    ============================================================ */
 
 :root {
-  --bg: #000000;
-  --bg-card: #0a0a0a;
-  --bg-card-hover: #111111;
-  --bg-sidebar: #050505;
-  --bg-input: #0e0e0e;
-  --border: #1a1a1a;
-  --border-hover: #333333;
-  --text: #ffffff;
-  --text-muted: #999999;
-  --text-dim: #555555;
-  --red: #ff0a0a;
-  --red-bright: #ff3333;
-  --red-glow: rgba(255, 10, 10, 0.15);
-  --red-glow-strong: rgba(255, 10, 10, 0.3);
-  --primary: #ff0a0a;
-  --primary-hover: #ff3333;
-  --primary-glow: rgba(255, 10, 10, 0.15);
-  --green: #00ff66;
-  --green-glow: rgba(0, 255, 102, 0.1);
-  --white-glow: rgba(255, 255, 255, 0.08);
+  --bg: #0c0f19;
+  --bg-card: #16191e;
+  --bg-card-hover: #1c2028;
+  --bg-sidebar: #0c0f19;
+  --bg-input: #1c2028;
+  --border: #282c38;
+  --border-hover: #3c3f48;
+  --text: #eeeff3;
+  --text-muted: #6f7178;
+  --text-dim: #4b4b4b;
+  --red: #f13333;
+  --red-bright: #f23333;
+  --red-glow: rgba(241, 51, 51, 0.15);
+  --red-glow-strong: rgba(241, 51, 51, 0.3);
+  --primary: #f13333;
+  --primary-hover: #f55555;
+  --primary-glow: rgba(241, 51, 51, 0.15);
+  --blue: #1789ff;
+  --blue-glow: rgba(23, 137, 255, 0.15);
+  --green: #1e9944;
+  --green-glow: rgba(30, 153, 68, 0.12);
+  --white-glow: rgba(238, 239, 243, 0.08);
   --radius: 10px;
   --radius-sm: 6px;
   --radius-xs: 4px;
   --shadow: 0 4px 30px rgba(0, 0, 0, 0.6);
   --transition: 0.2s ease;
   --sidebar-width: 260px;
-  --font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font: "Exo 2", "Roboto Condensed", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-mono: "JetBrains Mono", "Fira Code", monospace;
 }
 
@@ -96,7 +98,7 @@ body {
   width: 32px;
   height: 32px;
   color: var(--red);
-  filter: drop-shadow(0 0 8px rgba(255, 10, 10, 0.6));
+  filter: drop-shadow(0 0 8px rgba(241, 51, 51, 0.6));
 }
 
 .logo-text {
@@ -104,8 +106,8 @@ body {
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #fff;
-  text-shadow: 0 0 20px rgba(255, 10, 10, 0.5);
+  color: var(--text);
+  text-shadow: 0 0 20px rgba(241, 51, 51, 0.5);
 }
 
 .sidebar-close {
@@ -265,7 +267,7 @@ body {
   border-color: var(--border-hover);
   background: var(--bg-card-hover);
   transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(255, 10, 10, 0.08);
+  box-shadow: 0 8px 30px rgba(241, 51, 51, 0.08);
 }
 .stat-card:hover::before {
   opacity: 1;
@@ -390,22 +392,22 @@ body {
 .btn-primary {
   background: var(--red);
   color: #fff;
-  box-shadow: 0 0 20px rgba(255, 10, 10, 0.2);
+  box-shadow: 0 0 20px rgba(241, 51, 51, 0.2);
 }
 .btn-primary:hover:not(:disabled) {
   background: var(--red-bright);
-  box-shadow: 0 0 30px rgba(255, 10, 10, 0.4);
+  box-shadow: 0 0 30px rgba(241, 51, 51, 0.4);
   transform: translateY(-1px);
 }
 
 .btn-success {
   background: var(--red);
   color: #fff;
-  box-shadow: 0 0 20px rgba(255, 10, 10, 0.2);
+  box-shadow: 0 0 20px rgba(241, 51, 51, 0.2);
 }
 .btn-success:hover:not(:disabled) {
   background: var(--red-bright);
-  box-shadow: 0 0 30px rgba(255, 10, 10, 0.4);
+  box-shadow: 0 0 30px rgba(241, 51, 51, 0.4);
 }
 
 .btn-danger {
@@ -519,10 +521,10 @@ select {
   font-family: var(--font-mono);
   font-size: 4.5rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--text);
   letter-spacing: 4px;
   margin-bottom: 28px;
-  text-shadow: 0 0 60px rgba(255, 10, 10, 0.4), 0 0 120px rgba(255, 10, 10, 0.15);
+  text-shadow: 0 0 60px rgba(241, 51, 51, 0.4), 0 0 120px rgba(241, 51, 51, 0.15);
 }
 
 .stopwatch-controls {
@@ -1068,9 +1070,9 @@ select {
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
-.badge-practice { background: var(--white-glow); color: var(--text-muted); }
+.badge-practice { background: var(--blue-glow); color: var(--blue); }
 .badge-qualifying { background: var(--red-glow); color: var(--red); }
-.badge-race { background: var(--red-glow-strong); color: #ff4444; border: 1px solid rgba(255,10,10,0.3); }
+.badge-race { background: var(--red-glow-strong); color: var(--red); border: 1px solid rgba(241,51,51,0.3); }
 
 /* ============================================================
    Session Detail
@@ -1408,7 +1410,7 @@ select {
   padding: 28px;
   max-width: 420px;
   width: 90%;
-  box-shadow: 0 0 60px rgba(255, 10, 10, 0.1);
+  box-shadow: 0 0 60px rgba(241, 51, 51, 0.1);
 }
 
 .modal h3 {
@@ -1481,8 +1483,8 @@ select {
     var(--red) 20px,
     transparent 20px,
     transparent 30px,
-    #fff 30px,
-    #fff 50px,
+    var(--blue) 30px,
+    var(--blue) 50px,
     transparent 50px,
     transparent 60px
   );
@@ -1598,7 +1600,7 @@ select {
   height: 200%;
   background: radial-gradient(
     ellipse at 50% 50%,
-    rgba(255, 10, 10, 0.06) 0%,
+    rgba(241, 51, 51, 0.06) 0%,
     transparent 60%
   );
   animation: authPulse 6s ease-in-out infinite;
@@ -1629,7 +1631,7 @@ select {
   width: 44px;
   height: 44px;
   color: var(--red);
-  filter: drop-shadow(0 0 12px rgba(255, 10, 10, 0.6));
+  filter: drop-shadow(0 0 12px rgba(241, 51, 51, 0.6));
   animation: logoSpin 20s linear infinite;
 }
 
@@ -1643,8 +1645,8 @@ select {
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: #fff;
-  text-shadow: 0 0 30px rgba(255, 10, 10, 0.5);
+  color: var(--text);
+  text-shadow: 0 0 30px rgba(241, 51, 51, 0.5);
 }
 
 .auth-card {
@@ -1685,9 +1687,9 @@ select {
 .auth-error {
   padding: 10px 14px;
   background: var(--red-glow);
-  border: 1px solid rgba(255, 10, 10, 0.3);
+  border: 1px solid rgba(241, 51, 51, 0.3);
   border-radius: var(--radius-xs);
-  color: var(--red-bright);
+  color: var(--red);
   font-size: 0.82rem;
   font-weight: 600;
   margin-bottom: 16px;
