@@ -653,49 +653,107 @@
     resetSessionSetup();
   });
 
-  // ── Photo Scan (OCR) ───────────────────────────────────
+  // ── Camera & Photo Scan (OCR) ────────────────────────────
   let scannedTimes = [];
+  let cameraStream = null;
+  let facingMode = "environment";
+
+  const cameraWrapper = $("#camera-wrapper");
+  const scanCaptured = $("#scan-captured");
+  const cameraVideo = $("#camera-video");
+  const cameraCanvas = $("#camera-canvas");
+  const scanFileInput = $("#scan-file-input");
+
+  async function startCamera() {
+    stopCamera();
+    try {
+      cameraStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode, width: { ideal: 1920 }, height: { ideal: 1080 } },
+        audio: false,
+      });
+      cameraVideo.srcObject = cameraStream;
+      await cameraVideo.play();
+    } catch (err) {
+      showToast("Camera not available. Use the gallery button.", "error");
+    }
+  }
+
+  function stopCamera() {
+    if (cameraStream) {
+      cameraStream.getTracks().forEach((t) => t.stop());
+      cameraStream = null;
+    }
+    cameraVideo.srcObject = null;
+  }
 
   function resetScan() {
     scannedTimes = [];
-    $("#scan-preview").style.display = "none";
+    scanCaptured.classList.add("hidden");
+    cameraWrapper.classList.remove("hidden");
     $("#scan-progress").style.display = "none";
     $("#scan-results").style.display = "none";
     $("#scan-save-session").disabled = true;
     $("#scan-date").value = new Date().toISOString().split("T")[0];
+    startCamera();
   }
 
-  const scanDropZone = $("#scan-drop-zone");
-  const scanFileInput = $("#scan-file-input");
+  function capturePhoto() {
+    const vw = cameraVideo.videoWidth;
+    const vh = cameraVideo.videoHeight;
+    if (!vw || !vh) { showToast("Camera not ready yet.", "error"); return null; }
+    cameraCanvas.width = vw;
+    cameraCanvas.height = vh;
+    const ctx = cameraCanvas.getContext("2d");
+    ctx.drawImage(cameraVideo, 0, 0, vw, vh);
+    return new Promise((resolve) => {
+      cameraCanvas.toBlob((blob) => resolve(blob), "image/jpeg", 0.92);
+    });
+  }
 
-  scanDropZone.addEventListener("click", () => scanFileInput.click());
+  // Shutter button — take photo
+  $("#camera-shutter").addEventListener("click", async () => {
+    const blob = await capturePhoto();
+    if (!blob) return;
+    stopCamera();
+    cameraWrapper.classList.add("hidden");
+    scanCaptured.classList.remove("hidden");
+    processImage(blob);
+  });
 
-  scanDropZone.addEventListener("dragover", (e) => {
-    e.preventDefault();
-    scanDropZone.classList.add("drag-over");
-  });
-  scanDropZone.addEventListener("dragleave", () => scanDropZone.classList.remove("drag-over"));
-  scanDropZone.addEventListener("drop", (e) => {
-    e.preventDefault();
-    scanDropZone.classList.remove("drag-over");
-    if (e.dataTransfer.files.length) processImage(e.dataTransfer.files[0]);
-  });
+  // Gallery button — pick from photos
+  $("#camera-gallery-btn").addEventListener("click", () => scanFileInput.click());
 
   scanFileInput.addEventListener("change", (e) => {
-    if (e.target.files.length) processImage(e.target.files[0]);
+    if (e.target.files.length) {
+      stopCamera();
+      cameraWrapper.classList.add("hidden");
+      scanCaptured.classList.remove("hidden");
+      processImage(e.target.files[0]);
+    }
     e.target.value = "";
   });
 
-  async function processImage(file) {
-    if (!file.type.startsWith("image/")) {
-      showToast("Please select an image file.", "error");
-      return;
-    }
+  // Flip camera
+  $("#camera-flip-btn").addEventListener("click", () => {
+    facingMode = facingMode === "environment" ? "user" : "environment";
+    startCamera();
+  });
 
-    const previewEl = $("#scan-preview");
+  // Retake
+  $("#scan-retake").addEventListener("click", () => {
+    resetScan();
+  });
+
+  // Stop camera when leaving the scan view
+  const origSwitchView = switchView;
+  switchView = function (name) {
+    if (name !== "scan") stopCamera();
+    origSwitchView(name);
+  };
+
+  async function processImage(blobOrFile) {
     const previewImg = $("#scan-preview-img");
-    previewEl.style.display = "block";
-    previewImg.src = URL.createObjectURL(file);
+    previewImg.src = URL.createObjectURL(blobOrFile);
 
     const progressEl = $("#scan-progress");
     const progressFill = $("#scan-progress-fill");
@@ -703,7 +761,6 @@
     progressEl.style.display = "block";
     progressFill.style.width = "0%";
     progressText.textContent = "Loading OCR engine...";
-
     $("#scan-results").style.display = "none";
 
     try {
@@ -719,7 +776,7 @@
         },
       });
 
-      const { data: { text } } = await worker.recognize(file);
+      const { data: { text } } = await worker.recognize(blobOrFile);
       await worker.terminate();
 
       progressFill.style.width = "100%";
@@ -732,7 +789,7 @@
         showToast(`Found ${times.length} lap times!`, "success");
       } else {
         showToast("No lap times detected. Try a clearer photo.", "error");
-        progressText.textContent = "No times found. Try a clearer image.";
+        progressText.textContent = "No times found — retake or try a clearer image.";
       }
     } catch (err) {
       progressText.textContent = "OCR failed. Try another image.";
