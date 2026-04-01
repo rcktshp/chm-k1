@@ -429,8 +429,8 @@
     trendChart = new MiniChart(canvas, {
       labels: sorted.map((s) => formatDate(s.date)),
       datasets: [
-        { label: "Best Lap", data: sorted.map((s) => bestLap(s.laps)), color: "#ff0a0a" },
-        { label: "Avg Lap", data: sorted.map((s) => avgLap(s.laps)), color: "#ffffff" },
+        { label: "Best Lap", data: sorted.map((s) => bestLap(s.laps)), color: "#f13333" },
+        { label: "Avg Lap", data: sorted.map((s) => avgLap(s.laps)), color: "#1789ff" },
       ],
       formatY: formatTime,
     });
@@ -1022,7 +1022,7 @@
     if (session.laps.length < 2) return;
     sessionChart = new MiniChart(canvas, {
       labels: session.laps.map((_, i) => `Lap ${i + 1}`),
-      datasets: [{ label: "Lap Time", data: session.laps, color: "#ff0a0a" }],
+      datasets: [{ label: "Lap Time", data: session.laps, color: "#f13333" }],
       formatY: formatTime,
       showBestLine: bestLap(session.laps),
     });
@@ -1245,8 +1245,8 @@
     progressChart = new MiniChart(canvas, {
       labels: sorted.map((s) => `${escapeHtml(s.trackName)} (${formatDate(s.date)})`),
       datasets: [
-        { label: "Best Lap", data: sorted.map((s) => bestLap(s.laps)), color: "#ff0a0a" },
-        { label: "Average", data: sorted.map((s) => avgLap(s.laps)), color: "#ffffff" },
+        { label: "Best Lap", data: sorted.map((s) => bestLap(s.laps)), color: "#f13333" },
+        { label: "Average", data: sorted.map((s) => avgLap(s.laps)), color: "#1789ff" },
       ],
       formatY: formatTime,
     });
@@ -1423,7 +1423,7 @@
           ctx.shadowBlur = 6;
           ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill();
           ctx.shadowBlur = 0;
-          ctx.fillStyle = "#0a0a0a";
+          ctx.fillStyle = "#16191e";
           ctx.beginPath(); ctx.arc(x, y, 2, 0, Math.PI * 2); ctx.fill();
         });
       });
