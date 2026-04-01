@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KartLap — Go Kart Lap Times Tracker</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div id="app">
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 6v6l4 2"/>
+          </svg>
+          <span class="logo-text">KartLap</span>
+        </div>
+        <button class="sidebar-close" id="sidebar-close" aria-label="Close menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <ul class="nav-links">
+        <li><a href="#" class="nav-link active" data-view="dashboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          Dashboard
+        </a></li>
+        <li><a href="#" class="nav-link" data-view="new-session">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+          New Session
+        </a></li>
+        <li><a href="#" class="nav-link" data-view="sessions">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          Sessions
+        </a></li>
+        <li><a href="#" class="nav-link" data-view="stats">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          Statistics
+        </a></li>
+      </ul>
+      <div class="sidebar-footer">
+        <button class="btn btn-outline btn-sm" id="export-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export Data
+        </button>
+        <button class="btn btn-outline btn-sm" id="import-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Import Data
+        </button>
+        <input type="file" id="import-file" accept=".json" hidden />
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="top-bar">
+        <button class="hamburger" id="hamburger" aria-label="Open menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <h1 class="page-title" id="page-title">Dashboard</h1>
+      </header>
+
+      <!-- Dashboard View -->
+      <section class="view active" id="view-dashboard">
+        <div class="stats-grid">
+          <div class="stat-card accent-green">
+            <div class="stat-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            </div>
+            <div class="stat-info">
+              <span class="stat-value" id="stat-best-lap">--:--.---</span>
+              <span class="stat-label">Best Lap Time</span>
+            </div>
+          </div>
+          <div class="stat-card accent-blue">
+            <div class="stat-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            </div>
+            <div class="stat-info">
+              <span class="stat-value" id="stat-avg-lap">--:--.---</span>
+              <span class="stat-label">Average Lap Time</span>
+            </div>
+          </div>
+          <div class="stat-card accent-orange">
+            <div class="stat-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+            <div class="stat-info">
+              <span class="stat-value" id="stat-total-sessions">0</span>
+              <span class="stat-label">Total Sessions</span>
+            </div>
+          </div>
+          <div class="stat-card accent-purple">
+            <div class="stat-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            </div>
+            <div class="stat-info">
+              <span class="stat-value" id="stat-total-laps">0</span>
+              <span class="stat-label">Total Laps</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-grid">
+          <div class="card">
+            <div class="card-header">
+              <h2>Recent Sessions</h2>
+              <a href="#" class="link" data-view="sessions">View All</a>
+            </div>
+            <div class="card-body" id="recent-sessions">
+              <div class="empty-state">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+                <p>No sessions yet. Start your first session!</p>
+                <a href="#" class="btn btn-primary btn-sm" data-view="new-session">New Session</a>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h2>Lap Time Trend</h2>
+            </div>
+            <div class="card-body chart-container">
+              <canvas id="trend-chart"></canvas>
+              <div class="empty-state" id="trend-empty">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                <p>Complete more sessions to see trends.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- New Session View -->
+      <section class="view" id="view-new-session">
+        <div class="session-setup card" id="session-setup">
+          <div class="card-header"><h2>Session Setup</h2></div>
+          <div class="card-body">
+            <form id="session-form">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="track-name">Track Name</label>
+                  <input type="text" id="track-name" placeholder="e.g. Speedway Indoor Karting" required />
+                </div>
+                <div class="form-group">
+                  <label for="session-date">Date</label>
+                  <input type="date" id="session-date" required />
+                </div>
+                <div class="form-group">
+                  <label for="kart-number">Kart Number</label>
+                  <input type="text" id="kart-number" placeholder="e.g. 7" />
+                </div>
+                <div class="form-group">
+                  <label for="session-type">Session Type</label>
+                  <select id="session-type">
+                    <option value="practice">Practice</option>
+                    <option value="qualifying">Qualifying</option>
+                    <option value="race">Race</option>
+                  </select>
+                </div>
+                <div class="form-group full-width">
+                  <label for="session-notes">Notes</label>
+                  <textarea id="session-notes" rows="2" placeholder="Track conditions, weather, tire type..."></textarea>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary">Start Session</button>
+            </form>
+          </div>
+        </div>
+
+        <div class="session-active card hidden" id="session-active">
+          <div class="card-header">
+            <h2 id="active-session-title">Session</h2>
+            <div class="session-badge" id="active-session-badge">Practice</div>
+          </div>
+          <div class="card-body">
+            <!-- Stopwatch -->
+            <div class="stopwatch-area">
+              <div class="stopwatch-display" id="stopwatch-display">00:00.000</div>
+              <div class="stopwatch-controls">
+                <button class="btn btn-success btn-lg" id="btn-start-stop">
+                  <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                  Start
+                </button>
+                <button class="btn btn-primary btn-lg" id="btn-lap" disabled>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M3 3v5h5"/><path d="M3.05 13A9 9 0 106 5.3L3 8"/></svg>
+                  Lap
+                </button>
+                <button class="btn btn-outline btn-lg" id="btn-reset" disabled>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+                  Reset
+                </button>
+              </div>
+            </div>
+
+            <!-- Manual Entry -->
+            <div class="manual-entry">
+              <div class="divider"><span>or add manually</span></div>
+              <div class="manual-input-row">
+                <input type="text" id="manual-minutes" placeholder="MM" maxlength="2" class="time-input" />
+                <span class="time-sep">:</span>
+                <input type="text" id="manual-seconds" placeholder="SS" maxlength="2" class="time-input" />
+                <span class="time-sep">.</span>
+                <input type="text" id="manual-millis" placeholder="000" maxlength="3" class="time-input time-input-wide" />
+                <button class="btn btn-primary" id="btn-add-manual">Add Lap</button>
+              </div>
+            </div>
+
+            <!-- Lap Table -->
+            <div class="lap-table-wrapper">
+              <table class="lap-table" id="lap-table">
+                <thead>
+                  <tr>
+                    <th>Lap</th>
+                    <th>Time</th>
+                    <th>Delta</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="lap-table-body">
+                </tbody>
+              </table>
+              <div class="empty-state" id="laps-empty">
+                <p>No laps recorded yet. Use the stopwatch or enter manually.</p>
+              </div>
+            </div>
+
+            <div class="session-summary hidden" id="session-summary-bar">
+              <div class="summary-item">
+                <span class="summary-label">Best</span>
+                <span class="summary-value best" id="summary-best">--:--.---</span>
+              </div>
+              <div class="summary-item">
+                <span class="summary-label">Average</span>
+                <span class="summary-value" id="summary-avg">--:--.---</span>
+              </div>
+              <div class="summary-item">
+                <span class="summary-label">Laps</span>
+                <span class="summary-value" id="summary-count">0</span>
+              </div>
+            </div>
+
+            <div class="session-actions">
+              <button class="btn btn-success" id="btn-save-session" disabled>Save Session</button>
+              <button class="btn btn-danger-outline" id="btn-discard-session">Discard</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Sessions List View -->
+      <section class="view" id="view-sessions">
+        <div class="sessions-toolbar">
+          <div class="search-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="search-sessions" placeholder="Search by track name..." />
+          </div>
+          <select id="filter-type" class="filter-select">
+            <option value="all">All Types</option>
+            <option value="practice">Practice</option>
+            <option value="qualifying">Qualifying</option>
+            <option value="race">Race</option>
+          </select>
+          <select id="sort-sessions" class="filter-select">
+            <option value="date-desc">Newest First</option>
+            <option value="date-asc">Oldest First</option>
+            <option value="best-asc">Best Lap (Fastest)</option>
+            <option value="best-desc">Best Lap (Slowest)</option>
+          </select>
+        </div>
+        <div class="sessions-list" id="sessions-list">
+          <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <p>No sessions found.</p>
+            <a href="#" class="btn btn-primary btn-sm" data-view="new-session">Create Your First Session</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Session Detail View -->
+      <section class="view" id="view-session-detail">
+        <button class="btn btn-outline btn-sm back-btn" id="back-to-sessions">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+          Back to Sessions
+        </button>
+        <div class="session-detail-header" id="detail-header"></div>
+        <div class="detail-grid">
+          <div class="card">
+            <div class="card-header"><h2>Lap Times</h2></div>
+            <div class="card-body">
+              <table class="lap-table">
+                <thead>
+                  <tr><th>Lap</th><th>Time</th><th>Delta</th></tr>
+                </thead>
+                <tbody id="detail-laps-body"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h2>Session Chart</h2></div>
+            <div class="card-body chart-container">
+              <canvas id="session-chart"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Statistics View -->
+      <section class="view" id="view-stats">
+        <div class="stats-overview-grid">
+          <div class="card">
+            <div class="card-header"><h2>Personal Records</h2></div>
+            <div class="card-body" id="personal-records">
+              <div class="empty-state"><p>Complete sessions to see records.</p></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h2>Track Breakdown</h2></div>
+            <div class="card-body" id="track-breakdown">
+              <div class="empty-state"><p>Visit different tracks to compare.</p></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h2>Progress Over Time</h2></div>
+          <div class="card-body chart-container chart-wide">
+            <canvas id="progress-chart"></canvas>
+            <div class="empty-state" id="progress-empty">
+              <p>Need more sessions to show progress.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div class="modal-overlay hidden" id="modal-overlay">
+    <div class="modal">
+      <h3 id="modal-title">Confirm</h3>
+      <p id="modal-message">Are you sure?</p>
+      <div class="modal-actions">
+        <button class="btn btn-outline" id="modal-cancel">Cancel</button>
+        <button class="btn btn-danger" id="modal-confirm">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
