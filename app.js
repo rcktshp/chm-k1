@@ -147,12 +147,6 @@
     enterApp();
   });
 
-  $q("#guest-btn").addEventListener("click", () => {
-    currentUser = { username: "__guest__", displayName: "Guest" };
-    setAuthSession(currentUser);
-    enterApp();
-  });
-
   function enterApp() {
     authScreen.classList.add("hidden");
     appEl.classList.remove("hidden");
@@ -601,9 +595,230 @@
     sessions: "Sessions",
     stats: "Statistics",
     "session-detail": "Session Detail",
+    tracks: "Tracks",
     shop: "Shop",
     profile: "Profile",
   };
+
+  // ── K1 Speed Locations ──────────────────────────────────
+  const K1_LOCATIONS = {
+    usa: [
+      { state: "Alabama", locations: [{ name: "Birmingham", url: "https://www.k1speed.com/birmingham-location.html" }] },
+      { state: "Arizona", locations: [{ name: "Phoenix", url: "https://www.k1speed.com/phoenix-location.html" }] },
+      { state: "Arkansas", locations: [{ name: "Rogers", url: "https://www.k1speed.com/rogers-location.html" }] },
+      { state: "California", locations: [
+        { name: "Anaheim", url: "https://www.k1speed.com/anaheim-location.html" },
+        { name: "Burbank", url: "https://www.k1speed.com/burbank-location.html" },
+        { name: "Carlsbad", url: "https://www.k1speed.com/carlsbad-location.html" },
+        { name: "Chula Vista", url: "https://www.k1speed.com/chula-vista-location.html" },
+        { name: "Clovis", url: "https://www.k1speed.com/clovis-location.html" },
+        { name: "Corona", url: "https://www.k1speed.com/corona-location.html" },
+        { name: "Culver City", url: "https://www.k1speed.com/culver-city-location.html", badge: "open" },
+        { name: "Dublin", url: "https://www.k1speed.com/dublin-location.html" },
+        { name: "Irvine", url: "https://www.k1speed.com/irvine-location.html" },
+        { name: "Ontario", url: "https://www.k1speed.com/ontario-location.html" },
+        { name: "Sacramento", url: "https://www.k1speed.com/sacramento-location.html" },
+        { name: "San Diego", url: "https://www.k1speed.com/san-diego-location.html" },
+        { name: "S. San Francisco", url: "https://www.k1speed.com/san-francisco-location.html" },
+        { name: "Santa Clara", url: "https://www.k1speed.com/santa-clara-location.html" },
+        { name: "Thousand Oaks", url: "https://www.k1speed.com/thousand-oaks-location.html" },
+        { name: "Torrance", url: "https://www.k1speed.com/torrance-location.html" },
+        { name: "Winchester (K1 Circuit)", url: "http://www.k1circuit.com/winchester/" },
+      ]},
+      { state: "Colorado", locations: [
+        { name: "Denver – Littleton", url: "https://www.k1speed.com/denver-location.html" },
+        { name: "Denver – Thornton", url: "https://www.k1speed.com/thornton-location.html", badge: "coming-soon" },
+      ]},
+      { state: "Florida", locations: [
+        { name: "Daytona Beach", url: "https://www.k1speed.com/daytona-location.html" },
+        { name: "Fort Lauderdale", url: "https://www.k1speed.com/fort-lauderdale-location.html" },
+        { name: "Jacksonville", url: "https://www.k1speed.com/jacksonville-location.html" },
+        { name: "Miami – Medley", url: "https://www.k1speed.com/miami-location.html" },
+        { name: "Orlando", url: "https://www.k1speed.com/orlando-location.html" },
+        { name: "Riviera Beach", url: "https://www.k1speed.com/west-palm-beach-location.html" },
+        { name: "Tampa Bay", url: "https://www.k1speed.com/tampa-bay-location.html" },
+      ]},
+      { state: "Georgia", locations: [
+        { name: "Atlanta – Duluth", url: "https://www.k1speed.com/atlanta-location.html" },
+        { name: "Atlanta – Buckhead", url: "https://www.k1speed.com/buckhead-location.html", badge: "coming-soon" },
+      ]},
+      { state: "Idaho", locations: [{ name: "Boise – Meridian", url: "https://www.k1speed.com/boise-location.html" }] },
+      { state: "Illinois", locations: [
+        { name: "Addison", url: "https://www.k1speed.com/addison-location.html" },
+        { name: "Buffalo Grove", url: "https://www.k1speed.com/buffalo-grove-location.html" },
+        { name: "Mokena", url: "https://www.k1speed.com/mokena-location.html" },
+      ]},
+      { state: "Indiana", locations: [
+        { name: "Indianapolis – Fishers", url: "https://www.k1speed.com/indianapolis-location.html" },
+        { name: "Whiteland (K1 Circuit)", url: "https://www.k1circuit.com/whiteland" },
+      ]},
+      { state: "Iowa", locations: [{ name: "Des Moines", url: "https://www.k1speed.com/des-moines-location.html" }] },
+      { state: "Kansas", locations: [{ name: "Kansas City", url: "https://www.k1speed.com/kansas-city-location.html", badge: "coming-soon" }] },
+      { state: "Kentucky", locations: [{ name: "Louisville", badge: "planning" }] },
+      { state: "Louisiana", locations: [{ name: "New Orleans", url: "https://www.k1speed.com/new-orleans-location.html" }] },
+      { state: "Maryland", locations: [{ name: "Jessup", url: "https://www.k1speed.com/jessup-location.html" }] },
+      { state: "Massachusetts", locations: [{ name: "Boston – Wilmington", url: "https://www.k1speed.com/boston-location.html" }] },
+      { state: "Michigan", locations: [
+        { name: "Oxford", url: "https://www.k1speed.com/oxford-location.html" },
+        { name: "Traverse City", url: "https://www.k1speed.com/traverse-city-location.html" },
+      ]},
+      { state: "Missouri", locations: [{ name: "Lee's Summit", url: "https://www.k1speed.com/lees-summit-location.html" }] },
+      { state: "Nevada", locations: [{ name: "Las Vegas", url: "https://www.k1speed.com/las-vegas-location.html" }] },
+      { state: "New Jersey", locations: [
+        { name: "Cinnaminson", url: "https://www.k1speed.com/cinnaminson-location.html" },
+        { name: "Totowa", url: "https://www.k1speed.com/totowa-location.html", badge: "open" },
+      ]},
+      { state: "New York", locations: [
+        { name: "Mount Kisco", url: "https://www.k1speed.com/mount-kisco-location.html" },
+        { name: "West Nyack", url: "https://www.k1speed.com/west-nyack-location.html" },
+      ]},
+      { state: "North Carolina", locations: [{ name: "Concord", url: "https://www.k1speed.com/concord-location.html" }] },
+      { state: "Ohio", locations: [
+        { name: "Canton", url: "https://www.k1speed.com/canton-location.html" },
+        { name: "Cleveland – Avon", url: "https://www.k1speed.com/cleveland-location.html", badge: "coming-soon" },
+        { name: "Columbus", url: "https://www.k1speed.com/columbus-location.html" },
+      ]},
+      { state: "Oregon", locations: [
+        { name: "Bend", url: "https://www.k1speed.com/bend-location.html" },
+        { name: "Portland – Hillsboro", url: "https://www.k1speed.com/portland-location.html" },
+      ]},
+      { state: "Pennsylvania", locations: [
+        { name: "Harrisburg", url: "https://www.k1speed.com/harrisburg-location.html" },
+        { name: "Horsham", url: "https://www.k1speed.com/horsham-location.html" },
+      ]},
+      { state: "South Carolina", locations: [
+        { name: "Charleston", url: "https://www.k1speed.com/charleston-location.html", badge: "coming-soon" },
+        { name: "Myrtle Beach", url: "https://www.k1speed.com/myrtle-beach-location.html" },
+      ]},
+      { state: "Tennessee", locations: [
+        { name: "Knoxville", url: "https://www.k1speed.com/knoxville-location.html" },
+        { name: "Memphis", url: "https://www.k1speed.com/memphis-location.html" },
+        { name: "Nashville", url: "https://www.k1speed.com/nashville-location.html" },
+      ]},
+      { state: "Texas", locations: [
+        { name: "Arlington", url: "https://www.k1speed.com/arlington-location.html" },
+        { name: "Austin", url: "https://www.k1speed.com/austin-location.html" },
+        { name: "Dallas – Richardson", url: "https://www.k1speed.com/dallas-location.html" },
+        { name: "Houston", url: "https://www.k1speed.com/houston-location.html" },
+        { name: "San Antonio", url: "https://www.k1speed.com/san-antonio-location.html" },
+        { name: "The Woodlands – Conroe", url: "https://www.k1speed.com/the-woodlands-location.html" },
+      ]},
+      { state: "Utah", locations: [{ name: "Salt Lake City – Sandy", url: "https://www.k1speed.com/salt-lake-city-location.html" }] },
+      { state: "Virginia", locations: [
+        { name: "Dulles", url: "https://www.k1speed.com/dulles-location.html" },
+        { name: "Manassas", url: "https://www.k1speed.com/manassas-location.html" },
+        { name: "Richmond", url: "https://www.k1speed.com/richmond-location.html" },
+      ]},
+      { state: "Washington", locations: [
+        { name: "Seattle – Redmond", url: "https://www.k1speed.com/seattle-location.html" },
+        { name: "Seattle – Tukwila", url: "https://www.k1speed.com/tukwila-location.html" },
+      ]},
+      { state: "Wisconsin", locations: [{ name: "Milwaukee – Waukesha", url: "https://www.k1speed.com/milwaukee-location.html" }] },
+    ],
+    international: [
+      { state: "Canada", locations: [
+        { name: "Cambridge", url: "https://www.k1speed.ca/cambridge.html" },
+        { name: "Mississauga", url: "https://www.k1speed.ca/mississauga-location.html" },
+        { name: "St. Catharines", url: "https://www.k1speed.ca/location/stcatharines/" },
+        { name: "Toronto", url: "https://www.k1speed.ca/toronto-location.html" },
+      ]},
+      { state: "China", locations: [
+        { name: "Shenzhen", url: "https://www.k1speed.com/shenzhen-location.html" },
+        { name: "Guangzhou" },
+      ]},
+      { state: "England", locations: [
+        { name: "Canary Wharf – London", url: "https://www.k1speed.com/uk/canary-wharf.html" },
+        { name: "Vauxhall – London", badge: "planning" },
+      ]},
+      { state: "France", locations: [
+        { name: "Caen", url: "https://www.k1speed.com/fr/caen.html" },
+        { name: "Le Mans", url: "https://www.k1speed.com/fr/le-mans.html" },
+        { name: "Paris", badge: "coming-soon" },
+      ]},
+      { state: "Italy", locations: [
+        { name: "Catania", url: "https://www.k1speed.com/it/catania.html", badge: "open" },
+        { name: "Erba", url: "https://www.k1speed.com/it/erba.html" },
+        { name: "Marcianise", url: "https://www.k1speed.com/it/napoli-marcianise.html" },
+        { name: "Meda / Monza", url: "https://www.k1speed.com/it/meda.html" },
+        { name: "Milan", url: "https://www.k1speed.com/it/milano-bicocca.html" },
+        { name: "Roma", url: "https://hollywoodkart.it/porta-di-roma/", badge: "coming-soon" },
+        { name: "Turin", url: "https://www.k1speed.com/it/torino.html" },
+        { name: "Udine", url: "http://k1speed.com/it/udine.html", badge: "open" },
+      ]},
+      { state: "Mexico", locations: [
+        { name: "ARTZ Pedregal", url: "https://www.k1speed.mx/artz.html", badge: "open" },
+        { name: "Coapa", url: "https://www.k1speed.mx/coapa.html" },
+        { name: "Garden Santa Fe", url: "https://www.k1speed.mx/santa-fe-centro.html" },
+        { name: "Manacar", url: "https://www.k1speed.mx/manacar-centro.html" },
+        { name: "Queretaro", url: "https://www.k1speed.mx/queretaro-uptown.html" },
+      ]},
+      { state: "Puerto Rico", locations: [
+        { name: "Caguas", url: "https://www.k1speed.com/caguas-location.html" },
+        { name: "Canovanas", url: "https://www.k1speed.com/canovanas-location.html" },
+      ]},
+      { state: "Scotland", locations: [{ name: "Glasgow", url: "https://www.k1speed.com/uk/glasgow.html", badge: "planning" }] },
+      { state: "South Korea", locations: [{ name: "Vivaldi Park" }] },
+    ],
+  };
+
+  let tracksRegion = "usa";
+
+  function renderTracks() {
+    const search = ($("#search-tracks")?.value || "").toLowerCase();
+    const data = K1_LOCATIONS[tracksRegion] || [];
+
+    const filtered = data.map((group) => {
+      const locs = group.locations.filter((l) =>
+        l.name.toLowerCase().includes(search) || group.state.toLowerCase().includes(search)
+      );
+      return { ...group, locations: locs };
+    }).filter((g) => g.locations.length > 0);
+
+    const container = $("#tracks-list");
+    if (!filtered.length) {
+      container.innerHTML = '<div class="empty-state"><p>No locations match your search.</p></div>';
+      return;
+    }
+
+    container.innerHTML = filtered.map((group) => {
+      const locsHtml = group.locations.map((loc) => {
+        const badgeHtml = loc.badge === "open" ? '<span class="track-loc-badge open">Now Open</span>'
+          : loc.badge === "coming-soon" ? '<span class="track-loc-badge coming-soon">Coming Soon</span>'
+          : loc.badge === "planning" ? '<span class="track-loc-badge planning">Planning</span>' : "";
+        const tag = loc.url ? "a" : "div";
+        const href = loc.url ? ` href="${loc.url}" target="_blank" rel="noopener"` : "";
+        return `<${tag} class="track-location"${href}>
+          <svg class="track-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <div class="track-loc-info">
+            <span class="track-loc-name">${escapeHtml(loc.name)}</span>
+            <span class="track-loc-sub">${escapeHtml(group.state)}</span>
+          </div>
+          ${badgeHtml}
+        </${tag}>`;
+      }).join("");
+
+      return `<div class="track-region-group">
+        <div class="track-region-header">
+          ${escapeHtml(group.state)}
+          <span class="region-count">${group.locations.length}</span>
+        </div>
+        <div class="track-location-list">${locsHtml}</div>
+      </div>`;
+    }).join("");
+  }
+
+  document.addEventListener("click", (e) => {
+    const tab = e.target.closest(".track-tab");
+    if (tab) {
+      $$(".track-tab").forEach((t) => t.classList.remove("active"));
+      tab.classList.add("active");
+      tracksRegion = tab.dataset.region;
+      renderTracks();
+    }
+  });
+
+  const searchTracksEl = $("#search-tracks");
+  if (searchTracksEl) searchTracksEl.addEventListener("input", renderTracks);
 
   function switchView(name) {
     $$(".view").forEach((v) => v.classList.remove("active"));
@@ -622,6 +837,7 @@
     if (name === "stats") renderStats();
     if (name === "new-session") resetSessionSetup();
     if (name === "scan") resetScan();
+    if (name === "tracks") renderTracks();
     if (name === "shop") renderShop();
     if (name === "profile") renderProfileView();
   }
@@ -1657,13 +1873,13 @@
       const toY = (v) => pad.top + chartH - ((v - minVal) / (maxVal - minVal)) * chartH;
 
       // Grid
-      ctx.strokeStyle = "rgba(255,255,255,0.04)";
+      ctx.strokeStyle = "rgba(0,0,0,0.06)";
       ctx.lineWidth = 1;
       for (let i = 0; i <= 5; i++) {
         const y = pad.top + (chartH / 5) * i;
         ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(width - pad.right, y); ctx.stroke();
         const val = maxVal - ((maxVal - minVal) / 5) * i;
-        ctx.fillStyle = "rgba(255,255,255,0.25)";
+        ctx.fillStyle = "rgba(0,0,0,0.35)";
         ctx.font = "11px 'JetBrains Mono', monospace";
         ctx.textAlign = "right";
         ctx.fillText(formatY(Math.round(val)), pad.left - 10, y + 4);
@@ -1680,7 +1896,7 @@
       }
 
       // X labels
-      ctx.fillStyle = "rgba(255,255,255,0.25)";
+      ctx.fillStyle = "rgba(0,0,0,0.35)";
       ctx.font = "10px 'Inter', sans-serif";
       ctx.textAlign = "center";
       const labelSkip = Math.ceil(n / (chartW / 70));
@@ -1738,7 +1954,7 @@
           ctx.shadowBlur = 6;
           ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill();
           ctx.shadowBlur = 0;
-          ctx.fillStyle = "#16191e";
+          ctx.fillStyle = "#ffffff";
           ctx.beginPath(); ctx.arc(x, y, 2, 0, Math.PI * 2); ctx.fill();
         });
       });
@@ -1749,7 +1965,7 @@
         datasets.forEach((ds) => {
           ctx.fillStyle = ds.color;
           ctx.beginPath(); ctx.arc(lx + 6, 14, 5, 0, Math.PI * 2); ctx.fill();
-          ctx.fillStyle = "rgba(255,255,255,0.5)";
+          ctx.fillStyle = "rgba(0,0,0,0.5)";
           ctx.font = "12px 'Inter', sans-serif";
           ctx.textAlign = "left";
           ctx.fillText(ds.label, lx + 16, 18);
