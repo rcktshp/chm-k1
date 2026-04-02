@@ -4,32 +4,32 @@
    ============================================================ */
 
 :root {
-  --bg: #0c0f19;
-  --bg-card: #16191e;
-  --bg-card-hover: #1c2028;
-  --bg-sidebar: #0c0f19;
-  --bg-input: #1c2028;
-  --border: #282c38;
-  --border-hover: #3c3f48;
-  --text: #eeeff3;
-  --text-muted: #6f7178;
-  --text-dim: #4b4b4b;
+  --bg: #f3f3f3;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f8f8f8;
+  --bg-sidebar: #ffffff;
+  --bg-input: #f8f8f8;
+  --border: #e0dede;
+  --border-hover: #ccc;
+  --text: #242424;
+  --text-muted: #6c6c6c;
+  --text-dim: #949494;
   --red: #f13333;
   --red-bright: #f23333;
-  --red-glow: rgba(241, 51, 51, 0.15);
-  --red-glow-strong: rgba(241, 51, 51, 0.3);
+  --red-glow: rgba(241, 51, 51, 0.1);
+  --red-glow-strong: rgba(241, 51, 51, 0.2);
   --primary: #f13333;
-  --primary-hover: #f55555;
-  --primary-glow: rgba(241, 51, 51, 0.15);
+  --primary-hover: #d92020;
+  --primary-glow: rgba(241, 51, 51, 0.1);
   --blue: #1789ff;
-  --blue-glow: rgba(23, 137, 255, 0.15);
+  --blue-glow: rgba(23, 137, 255, 0.1);
   --green: #1e9944;
-  --green-glow: rgba(30, 153, 68, 0.12);
-  --white-glow: rgba(238, 239, 243, 0.08);
+  --green-glow: rgba(30, 153, 68, 0.08);
+  --white-glow: rgba(0, 0, 0, 0.04);
   --radius: 10px;
   --radius-sm: 6px;
   --radius-xs: 4px;
-  --shadow: 0 4px 30px rgba(0, 0, 0, 0.6);
+  --shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   --transition: 0.2s ease;
   --sidebar-width: 260px;
   --font: "Exo 2", "Roboto Condensed", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -98,7 +98,6 @@ body {
   width: 32px;
   height: 32px;
   color: var(--red);
-  filter: drop-shadow(0 0 8px rgba(241, 51, 51, 0.6));
 }
 
 .logo-text {
@@ -106,8 +105,7 @@ body {
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--text);
-  text-shadow: 0 0 20px rgba(241, 51, 51, 0.5);
+  color: var(--red);
 }
 
 .sidebar-close {
@@ -392,30 +390,26 @@ body {
 .btn-primary {
   background: var(--red);
   color: #fff;
-  box-shadow: 0 0 20px rgba(241, 51, 51, 0.2);
 }
 .btn-primary:hover:not(:disabled) {
-  background: var(--red-bright);
-  box-shadow: 0 0 30px rgba(241, 51, 51, 0.4);
+  background: var(--primary-hover);
   transform: translateY(-1px);
 }
 
 .btn-success {
   background: var(--red);
   color: #fff;
-  box-shadow: 0 0 20px rgba(241, 51, 51, 0.2);
 }
 .btn-success:hover:not(:disabled) {
-  background: var(--red-bright);
-  box-shadow: 0 0 30px rgba(241, 51, 51, 0.4);
+  background: var(--primary-hover);
 }
 
 .btn-danger {
-  background: #fff;
-  color: #000;
+  background: var(--text);
+  color: var(--bg-card);
 }
 .btn-danger:hover:not(:disabled) {
-  background: #e0e0e0;
+  opacity: 0.85;
 }
 
 .btn-danger-outline {
@@ -524,7 +518,6 @@ select {
   color: var(--text);
   letter-spacing: 4px;
   margin-bottom: 28px;
-  text-shadow: 0 0 60px rgba(241, 51, 51, 0.4), 0 0 120px rgba(241, 51, 51, 0.15);
 }
 
 .stopwatch-controls {
@@ -1395,8 +1388,8 @@ select {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(6px);
   z-index: 200;
   display: flex;
   align-items: center;
@@ -1600,7 +1593,7 @@ select {
   height: 200%;
   background: radial-gradient(
     ellipse at 50% 50%,
-    rgba(241, 51, 51, 0.06) 0%,
+    rgba(241, 51, 51, 0.04) 0%,
     transparent 60%
   );
   animation: authPulse 6s ease-in-out infinite;
@@ -1631,7 +1624,6 @@ select {
   width: 44px;
   height: 44px;
   color: var(--red);
-  filter: drop-shadow(0 0 12px rgba(241, 51, 51, 0.6));
   animation: logoSpin 20s linear infinite;
 }
 
@@ -1645,8 +1637,7 @@ select {
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--text);
-  text-shadow: 0 0 30px rgba(241, 51, 51, 0.5);
+  color: var(--red);
 }
 
 .auth-card {
@@ -2086,8 +2077,171 @@ select {
   font-size: 1.2rem;
 }
 
+/* ============================================================
+   Tracks Page
+   ============================================================ */
+
+.tracks-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.tracks-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.track-tab {
+  padding: 8px 20px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--bg-card);
+  color: var(--text-muted);
+  font-family: var(--font);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.track-tab:hover {
+  border-color: var(--border-hover);
+  color: var(--text);
+}
+
+.track-tab.active {
+  background: var(--red);
+  border-color: var(--red);
+  color: #fff;
+}
+
+.tracks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.track-region-group {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.track-region-header {
+  padding: 14px 20px;
+  background: var(--bg-input);
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.track-region-header .region-count {
+  background: var(--red-glow);
+  color: var(--red);
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.track-location-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 0;
+}
+
+.track-location {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+  transition: var(--transition);
+  text-decoration: none;
+  color: var(--text);
+}
+
+.track-location:hover {
+  background: var(--bg-card-hover);
+}
+
+.track-location:last-child {
+  border-bottom: none;
+}
+
+.track-pin {
+  color: var(--red);
+  flex-shrink: 0;
+}
+
+.track-loc-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.track-loc-name {
+  font-weight: 700;
+  font-size: 0.88rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.track-loc-sub {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.track-loc-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 10px;
+  margin-left: auto;
+  flex-shrink: 0;
+  letter-spacing: 0.04em;
+}
+
+.track-loc-badge.open {
+  background: var(--green-glow);
+  color: var(--green);
+}
+
+.track-loc-badge.coming-soon {
+  background: var(--blue-glow);
+  color: var(--blue);
+}
+
+.track-loc-badge.planning {
+  background: rgba(0,0,0,0.05);
+  color: var(--text-dim);
+}
+
 @media (max-width: 768px) {
   .shop-grid {
     grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  }
+  .track-location-list {
+    grid-template-columns: 1fr;
+  }
+  .tracks-header {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
