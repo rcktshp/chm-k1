@@ -108,6 +108,14 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
           Statistics
         </a></li>
+        <li><a href="#" class="nav-link" data-view="shop">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
+          Shop
+        </a></li>
+        <li><a href="#" class="nav-link" data-view="profile">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Profile
+        </a></li>
       </ul>
       <div class="sidebar-footer">
         <div class="sidebar-user" id="sidebar-user">
@@ -115,6 +123,10 @@
           <div class="user-info">
             <span class="user-name" id="user-display-name">Guest</span>
             <span class="user-tag" id="user-tag">@guest</span>
+          </div>
+          <div class="coin-badge" id="coin-badge" title="Your coins">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><circle cx="12" cy="12" r="10"/><text x="12" y="16" text-anchor="middle" font-size="12" font-weight="bold" fill="#0c0f19">$</text></svg>
+            <span id="coin-count">0</span>
           </div>
         </div>
         <button class="btn btn-outline btn-sm" id="export-btn">
@@ -533,6 +545,74 @@
             <canvas id="progress-chart"></canvas>
             <div class="empty-state" id="progress-empty">
               <p>Need more sessions to show progress.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Shop View -->
+      <section class="view" id="view-shop">
+        <div class="racing-stripe"></div>
+        <div class="shop-header">
+          <h2 class="shop-title">Shop</h2>
+          <div class="coin-display">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><circle cx="12" cy="12" r="10"/><text x="12" y="16" text-anchor="middle" font-size="12" font-weight="bold" fill="#0c0f19">$</text></svg>
+            <span id="shop-coin-count">0</span>
+            <span class="coin-label">coins</span>
+          </div>
+        </div>
+        <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:20px;">Earn coins by completing sessions, setting personal bests, and reaching milestones. Spend them on profile customizations!</p>
+
+        <div class="card" style="margin-bottom:20px">
+          <div class="card-header"><h2>Avatars</h2></div>
+          <div class="card-body">
+            <div class="shop-grid" id="shop-avatars"></div>
+          </div>
+        </div>
+        <div class="card" style="margin-bottom:20px">
+          <div class="card-header"><h2>Borders</h2></div>
+          <div class="card-body">
+            <div class="shop-grid" id="shop-borders"></div>
+          </div>
+        </div>
+        <div class="card" style="margin-bottom:20px">
+          <div class="card-header"><h2>Titles</h2></div>
+          <div class="card-body">
+            <div class="shop-grid" id="shop-titles"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><h2>How to Earn Coins</h2></div>
+          <div class="card-body">
+            <div class="earn-list" id="earn-list"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Profile View -->
+      <section class="view" id="view-profile">
+        <div class="racing-stripe"></div>
+        <div class="profile-card">
+          <div class="profile-preview" id="profile-preview"></div>
+          <div class="profile-sections">
+            <div class="card" style="margin-bottom:16px">
+              <div class="card-header"><h2>Equipped Avatar</h2></div>
+              <div class="card-body">
+                <div class="equip-grid" id="equip-avatars"></div>
+              </div>
+            </div>
+            <div class="card" style="margin-bottom:16px">
+              <div class="card-header"><h2>Equipped Border</h2></div>
+              <div class="card-body">
+                <div class="equip-grid" id="equip-borders"></div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header"><h2>Equipped Title</h2></div>
+              <div class="card-body">
+                <div class="equip-grid" id="equip-titles"></div>
+              </div>
             </div>
           </div>
         </div>
