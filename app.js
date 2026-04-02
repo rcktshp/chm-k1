@@ -156,8 +156,10 @@
   function enterApp() {
     authScreen.classList.add("hidden");
     appEl.classList.remove("hidden");
-    updateUserUI();
     sessions = loadSessions();
+    profile = loadProfile();
+    updateCoinDisplay();
+    updateUserUI();
     renderDashboard();
     $q("#session-date").value = new Date().toISOString().split("T")[0];
   }
@@ -168,7 +170,22 @@
     const isGuest = currentUser.username === "__guest__";
     $q("#user-display-name").textContent = name;
     $q("#user-tag").textContent = isGuest ? "guest" : `@${currentUser.username}`;
-    $q("#user-avatar").textContent = name.charAt(0).toUpperCase();
+
+    const avatarEl = $q("#user-avatar");
+    const avatarItem = SHOP_ITEMS.avatars.find((a) => a.id === profile.equipped.avatar) || SHOP_ITEMS.avatars[0];
+    const borderItem = SHOP_ITEMS.borders.find((b) => b.id === profile.equipped.border) || SHOP_ITEMS.borders[0];
+    avatarEl.textContent = avatarItem.preview || name.charAt(0).toUpperCase();
+    avatarEl.style.background = avatarItem.bg;
+    avatarEl.style.color = avatarItem.color;
+    avatarEl.style.border = borderItem.style;
+    avatarEl.style.boxShadow = borderItem.shadow || "none";
+    if (borderItem.gradient) {
+      avatarEl.style.border = "3px solid transparent";
+      avatarEl.style.background = `linear-gradient(${avatarItem.bg},${avatarItem.bg}) padding-box,linear-gradient(135deg,#f13333,#1789ff,#f1b900,#1e9944) border-box`;
+    }
+    avatarEl.style.fontSize = avatarItem.preview ? "1rem" : "0.85rem";
+
+    updateCoinDisplay();
   }
 
   $q("#signout-btn").addEventListener("click", () => {
@@ -190,6 +207,290 @@
   }
 
   let sessions = loadSessions();
+
+  // ── Coins & Shop System ─────────────────────────────────
+  const SHOP_ITEMS = {
+    avatars: [
+      { id: "default", name: "Default", preview: "", price: 0, bg: "var(--red-glow-strong)", color: "var(--red)" },
+      { id: "fire", name: "Fire", preview: "🔥", price: 50, bg: "#2a1a00", color: "#ff6600" },
+      { id: "lightning", name: "Lightning", preview: "⚡", price: 75, bg: "#2a2400", color: "#f1b900" },
+      { id: "trophy", name: "Trophy", preview: "🏆", price: 100, bg: "#2a2400", color: "#f1b900" },
+      { id: "helmet", name: "Helmet", preview: "🪖", price: 100, bg: "#1a2a1a", color: "#1e9944" },
+      { id: "flag", name: "Checkered", preview: "🏁", price: 150, bg: "#1a1a2a", color: "#1789ff" },
+      { id: "rocket", name: "Rocket", preview: "🚀", price: 200, bg: "#2a1a2a", color: "#a855f7" },
+      { id: "skull", name: "Skull", preview: "💀", price: 250, bg: "#1a1a1a", color: "#eeeff3" },
+      { id: "crown", name: "Crown", preview: "👑", price: 500, bg: "#2a2400", color: "#f1b900" },
+      { id: "alien", name: "Alien", preview: "👽", price: 300, bg: "#0a2a1a", color: "#00ff66" },
+    ],
+    borders: [
+      { id: "default", name: "Default", style: "2px solid var(--red)", price: 0 },
+      { id: "blue", name: "Blue Ring", style: "2px solid #1789ff", price: 50 },
+      { id: "gold", name: "Gold Ring", style: "2px solid #f1b900", price: 100 },
+      { id: "green", name: "Green Ring", style: "2px solid #1e9944", price: 75 },
+      { id: "thick-red", name: "Bold Red", style: "4px solid var(--red)", price: 100 },
+      { id: "thick-blue", name: "Bold Blue", style: "4px solid #1789ff", price: 100 },
+      { id: "glow-red", name: "Red Glow", style: "2px solid var(--red)", shadow: "0 0 12px rgba(241,51,51,0.5)", price: 200 },
+      { id: "glow-blue", name: "Blue Glow", style: "2px solid #1789ff", shadow: "0 0 12px rgba(23,137,255,0.5)", price: 200 },
+      { id: "glow-gold", name: "Gold Glow", style: "2px solid #f1b900", shadow: "0 0 12px rgba(241,185,0,0.5)", price: 300 },
+      { id: "rainbow", name: "Rainbow", style: "3px solid", gradient: true, price: 500 },
+    ],
+    titles: [
+      { id: "default", name: "No Title", text: "", price: 0 },
+      { id: "rookie", name: "Rookie", text: "Rookie Racer", price: 25 },
+      { id: "speedster", name: "Speedster", text: "Speedster", price: 75 },
+      { id: "hotlap", name: "Hot Lap", text: "Hot Lap Hero", price: 100 },
+      { id: "apex", name: "Apex", text: "Apex Hunter", price: 150 },
+      { id: "podium", name: "Podium", text: "Podium Finisher", price: 150 },
+      { id: "drift", name: "Drift King", text: "Drift King", price: 200 },
+      { id: "nitro", name: "Nitro", text: "Nitro Boost", price: 250 },
+      { id: "legend", name: "Legend", text: "Track Legend", price: 400 },
+      { id: "champion", name: "Champion", text: "Grand Champion", price: 500 },
+    ],
+  };
+
+  const COIN_REWARDS = [
+    { desc: "Complete a session", amount: 10 },
+    { desc: "Record 5+ laps in a session", amount: 5 },
+    { desc: "Set a new personal best", amount: 25 },
+    { desc: "Complete 5 sessions (milestone)", amount: 50 },
+    { desc: "Complete 10 sessions", amount: 100 },
+    { desc: "Complete 25 sessions", amount: 200 },
+    { desc: "Record 50 total laps", amount: 50 },
+    { desc: "Record 100 total laps", amount: 100 },
+    { desc: "Visit 3 different tracks", amount: 75 },
+    { desc: "Sign up for an account", amount: 25 },
+  ];
+
+  function profileKey(username) {
+    if (!username || username === "__guest__") return "kartlap_profile";
+    return `kartlap_profile_${username}`;
+  }
+
+  function loadProfile() {
+    try {
+      const p = JSON.parse(localStorage.getItem(profileKey(currentUser?.username)));
+      return p || defaultProfile();
+    } catch {
+      return defaultProfile();
+    }
+  }
+
+  function defaultProfile() {
+    return {
+      coins: 0,
+      owned: { avatars: ["default"], borders: ["default"], titles: ["default"] },
+      equipped: { avatar: "default", border: "default", title: "default" },
+      claimedMilestones: [],
+    };
+  }
+
+  function saveProfile(p) {
+    localStorage.setItem(profileKey(currentUser?.username), JSON.stringify(p));
+  }
+
+  let profile = loadProfile();
+
+  function addCoins(amount, reason) {
+    profile.coins += amount;
+    saveProfile(profile);
+    updateCoinDisplay();
+    if (reason) showToast(`+${amount} coins — ${reason}`, "success");
+  }
+
+  function updateCoinDisplay() {
+    const els = [
+      $q("#coin-count"),
+      $q("#shop-coin-count"),
+    ];
+    els.forEach((el) => { if (el) el.textContent = profile.coins; });
+  }
+
+  function checkAndAwardCoins(sessions) {
+    const allLaps = sessions.flatMap((s) => s.laps);
+    const totalSessions = sessions.length;
+    const totalLaps = allLaps.length;
+    const uniqueTracks = new Set(sessions.map((s) => s.trackName)).size;
+
+    const milestones = [
+      { id: "sessions_5", check: totalSessions >= 5, amount: 50, desc: "5 sessions milestone" },
+      { id: "sessions_10", check: totalSessions >= 10, amount: 100, desc: "10 sessions milestone" },
+      { id: "sessions_25", check: totalSessions >= 25, amount: 200, desc: "25 sessions milestone" },
+      { id: "laps_50", check: totalLaps >= 50, amount: 50, desc: "50 laps milestone" },
+      { id: "laps_100", check: totalLaps >= 100, amount: 100, desc: "100 laps milestone" },
+      { id: "tracks_3", check: uniqueTracks >= 3, amount: 75, desc: "3 tracks visited" },
+    ];
+
+    milestones.forEach((m) => {
+      if (m.check && !profile.claimedMilestones.includes(m.id)) {
+        profile.claimedMilestones.push(m.id);
+        addCoins(m.amount, m.desc);
+      }
+    });
+  }
+
+  function awardSessionCoins(session, isNewPB) {
+    addCoins(10, "Session completed");
+    if (session.laps.length >= 5) addCoins(5, "5+ laps bonus");
+    if (isNewPB) addCoins(25, "New personal best!");
+    checkAndAwardCoins(sessions);
+  }
+
+  // ── Shop Rendering ──────────────────────────────────────
+  function renderShop() {
+    updateCoinDisplay();
+    renderShopCategory("avatars", "#shop-avatars");
+    renderShopCategory("borders", "#shop-borders");
+    renderShopCategory("titles", "#shop-titles");
+    renderEarnList();
+  }
+
+  function renderShopCategory(category, containerSel) {
+    const container = $q(containerSel);
+    if (!container) return;
+    const items = SHOP_ITEMS[category];
+    container.innerHTML = items.map((item) => {
+      const owned = profile.owned[category].includes(item.id);
+      const equipped = profile.equipped[category === "avatars" ? "avatar" : category === "borders" ? "border" : "title"] === item.id;
+      let previewHtml = "";
+      if (category === "avatars") {
+        const letter = (currentUser?.displayName || currentUser?.username || "?").charAt(0).toUpperCase();
+        previewHtml = `<div class="avatar-preview-circle" style="background:${item.bg};color:${item.color}">${item.preview || letter}</div>`;
+      } else if (category === "borders") {
+        const letter = (currentUser?.displayName || currentUser?.username || "?").charAt(0).toUpperCase();
+        let borderStyle = item.style;
+        let extra = item.shadow ? `box-shadow:${item.shadow};` : "";
+        if (item.gradient) {
+          borderStyle = "3px solid transparent";
+          extra += "background:linear-gradient(var(--bg-card),var(--bg-card)) padding-box,linear-gradient(135deg,#f13333,#1789ff,#f1b900,#1e9944) border-box;";
+        }
+        previewHtml = `<div class="border-preview-circle" style="border:${borderStyle};${extra}">${letter}</div>`;
+      } else {
+        previewHtml = `<div style="font-size:0.88rem;color:var(--red);font-weight:700;min-height:40px;display:flex;align-items:center;justify-content:center;">${item.text || "—"}</div>`;
+      }
+
+      let statusHtml = "";
+      if (equipped) statusHtml = `<span class="shop-item-status equipped-label">Equipped</span>`;
+      else if (owned) statusHtml = `<span class="shop-item-status owned-label">Owned</span>`;
+      else statusHtml = `<span class="shop-item-price${item.price === 0 ? " free" : ""}">${item.price === 0 ? "Free" : item.price}</span>`;
+
+      return `<div class="shop-item${owned ? " owned" : ""}${equipped ? " equipped" : ""}" data-category="${category}" data-id="${item.id}">
+        ${previewHtml}
+        <div class="shop-item-name">${item.name}</div>
+        ${statusHtml}
+      </div>`;
+    }).join("");
+
+    container.querySelectorAll(".shop-item").forEach((el) => {
+      el.addEventListener("click", () => handleShopClick(el.dataset.category, el.dataset.id));
+    });
+  }
+
+  async function handleShopClick(category, id) {
+    const items = SHOP_ITEMS[category];
+    const item = items.find((i) => i.id === id);
+    if (!item) return;
+    const eqKey = category === "avatars" ? "avatar" : category === "borders" ? "border" : "title";
+    const owned = profile.owned[category].includes(id);
+
+    if (owned) {
+      profile.equipped[eqKey] = id;
+      saveProfile(profile);
+      renderShop();
+      renderProfileView();
+      updateUserUI();
+      showToast(`${item.name} equipped!`, "success");
+    } else {
+      if (profile.coins < item.price) {
+        showToast(`Not enough coins! Need ${item.price}, have ${profile.coins}.`, "error");
+        return;
+      }
+      if (item.price > 0) {
+        const ok = await showModal("Buy Item", `Buy "${item.name}" for ${item.price} coins?`);
+        if (!ok) return;
+      }
+      profile.coins -= item.price;
+      profile.owned[category].push(id);
+      profile.equipped[eqKey] = id;
+      saveProfile(profile);
+      renderShop();
+      renderProfileView();
+      updateCoinDisplay();
+      updateUserUI();
+      showToast(`Purchased ${item.name}!`, "success");
+    }
+  }
+
+  function renderEarnList() {
+    const el = $q("#earn-list");
+    if (!el) return;
+    el.innerHTML = COIN_REWARDS.map((r) =>
+      `<div class="earn-item">
+        <span class="earn-desc">${r.desc}</span>
+        <span class="earn-amount">+${r.amount}</span>
+      </div>`
+    ).join("");
+  }
+
+  // ── Profile Rendering ───────────────────────────────────
+  function renderProfileView() {
+    const preview = $q("#profile-preview");
+    if (!preview) return;
+    const name = currentUser?.displayName || currentUser?.username || "Guest";
+    const letter = name.charAt(0).toUpperCase();
+    const avatarItem = SHOP_ITEMS.avatars.find((a) => a.id === profile.equipped.avatar) || SHOP_ITEMS.avatars[0];
+    const borderItem = SHOP_ITEMS.borders.find((b) => b.id === profile.equipped.border) || SHOP_ITEMS.borders[0];
+    const titleItem = SHOP_ITEMS.titles.find((t) => t.id === profile.equipped.title) || SHOP_ITEMS.titles[0];
+
+    let borderStyle = borderItem.style;
+    let extraStyle = borderItem.shadow ? `box-shadow:${borderItem.shadow};` : "";
+    if (borderItem.gradient) {
+      borderStyle = "3px solid transparent";
+      extraStyle += "background:linear-gradient(var(--bg-card),var(--bg-card)) padding-box,linear-gradient(135deg,#f13333,#1789ff,#f1b900,#1e9944) border-box;";
+    }
+
+    preview.innerHTML = `
+      <div class="profile-avatar-large" style="background:${avatarItem.bg};color:${avatarItem.color};border:${borderStyle};${extraStyle}">
+        ${avatarItem.preview || letter}
+      </div>
+      <div class="profile-name">${escapeHtml(name)}</div>
+      ${titleItem.text ? `<div class="profile-title-text">${titleItem.text}</div>` : ""}
+      <div class="profile-coins-display">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><circle cx="12" cy="12" r="10"/><text x="12" y="16" text-anchor="middle" font-size="12" font-weight="bold" fill="#0c0f19">$</text></svg>
+        ${profile.coins} coins
+      </div>`;
+
+    renderEquipSection("avatars", "avatar", "#equip-avatars");
+    renderEquipSection("borders", "border", "#equip-borders");
+    renderEquipSection("titles", "title", "#equip-titles");
+  }
+
+  function renderEquipSection(category, eqKey, containerSel) {
+    const container = $q(containerSel);
+    if (!container) return;
+    const owned = profile.owned[category];
+    const items = SHOP_ITEMS[category].filter((i) => owned.includes(i.id));
+    container.innerHTML = items.map((item) => {
+      const active = profile.equipped[eqKey] === item.id;
+      let icon = "";
+      if (category === "avatars") icon = item.preview || "●";
+      else if (category === "borders") icon = "◯";
+      else icon = item.text || "—";
+      return `<div class="equip-chip${active ? " active" : ""}" data-category="${category}" data-id="${item.id}">
+        <span class="chip-icon">${icon}</span>
+        ${item.name}
+      </div>`;
+    }).join("");
+
+    container.querySelectorAll(".equip-chip").forEach((el) => {
+      el.addEventListener("click", () => {
+        profile.equipped[eqKey] = el.dataset.id;
+        saveProfile(profile);
+        renderProfileView();
+        renderShop();
+        updateUserUI();
+      });
+    });
+  }
 
   // ── Time helpers ────────────────────────────────────────
   function formatTime(ms) {
@@ -300,6 +601,8 @@
     sessions: "Sessions",
     stats: "Statistics",
     "session-detail": "Session Detail",
+    shop: "Shop",
+    profile: "Profile",
   };
 
   function switchView(name) {
@@ -319,6 +622,8 @@
     if (name === "stats") renderStats();
     if (name === "new-session") resetSessionSetup();
     if (name === "scan") resetScan();
+    if (name === "shop") renderShop();
+    if (name === "profile") renderProfileView();
   }
 
   document.addEventListener("click", (e) => {
@@ -634,8 +939,14 @@
       laps: [...currentLaps],
       createdAt: new Date().toISOString(),
     };
+    const prevBest = bestLap(sessions.flatMap((s) => s.laps));
     sessions.push(session);
     saveSessions(sessions);
+
+    const newBest = bestLap(sessions.flatMap((s) => s.laps));
+    const isNewPB = prevBest === null || (newBest !== null && newBest < prevBest);
+    awardSessionCoins(session, isNewPB);
+
     currentLaps = [];
     resetStopwatchUI();
     renderActiveLaps();
@@ -856,6 +1167,7 @@
       showToast("Please enter a track name.", "error");
       return;
     }
+    const prevBest = bestLap(sessions.flatMap((s) => s.laps));
     const session = {
       id: uuid(),
       trackName,
@@ -869,6 +1181,9 @@
     };
     sessions.push(session);
     saveSessions(sessions);
+    const newBest = bestLap(sessions.flatMap((s) => s.laps));
+    const isNewPB = prevBest === null || (newBest !== null && newBest < prevBest);
+    awardSessionCoins(session, isNewPB);
     scannedTimes = [];
     showToast("Session saved from scan!", "success");
     switchView("sessions");
