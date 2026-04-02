@@ -1786,3 +1786,308 @@ select {
   color: var(--text-dim);
   font-family: var(--font-mono);
 }
+
+/* ============================================================
+   Coins
+   ============================================================ */
+
+.coin-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(241, 185, 0, 0.12);
+  color: #f1b900;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.82rem;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.coin-badge svg {
+  color: #f1b900;
+}
+
+.coin-display {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #f1b900;
+}
+
+.coin-display svg {
+  color: #f1b900;
+}
+
+.coin-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.coin-earn-toast {
+  color: #f1b900;
+  font-weight: 700;
+}
+
+/* ============================================================
+   Shop
+   ============================================================ */
+
+.shop-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.shop-title {
+  font-size: 1.2rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.shop-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.shop-item {
+  background: var(--bg-input);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+}
+
+.shop-item:hover {
+  border-color: var(--border-hover);
+  background: var(--bg-card-hover);
+  transform: translateY(-2px);
+}
+
+.shop-item.owned {
+  border-color: var(--green);
+  background: rgba(30, 153, 68, 0.06);
+}
+
+.shop-item.equipped {
+  border-color: var(--red);
+  box-shadow: 0 0 16px var(--red-glow);
+}
+
+.shop-item-preview {
+  font-size: 2.2rem;
+  margin-bottom: 8px;
+  line-height: 1;
+}
+
+.shop-item-name {
+  font-weight: 700;
+  font-size: 0.82rem;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.shop-item-price {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.82rem;
+  color: #f1b900;
+}
+
+.shop-item-price.free {
+  color: var(--green);
+}
+
+.shop-item-status {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 3px 8px;
+  border-radius: 10px;
+  display: inline-block;
+  margin-top: 6px;
+}
+
+.shop-item-status.owned-label {
+  background: var(--green-glow);
+  color: var(--green);
+}
+
+.shop-item-status.equipped-label {
+  background: var(--red-glow);
+  color: var(--red);
+}
+
+.avatar-preview-circle {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  margin: 0 auto 8px;
+  font-weight: 800;
+}
+
+.border-preview-circle {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  margin: 0 auto 8px;
+  font-weight: 800;
+  background: var(--bg-card);
+  color: var(--text);
+}
+
+/* ============================================================
+   Earn List
+   ============================================================ */
+
+.earn-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.earn-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.earn-item:last-child {
+  border-bottom: none;
+}
+
+.earn-desc {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.earn-amount {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: #f1b900;
+  white-space: nowrap;
+}
+
+/* ============================================================
+   Profile
+   ============================================================ */
+
+.profile-card {
+  max-width: 700px;
+}
+
+.profile-preview {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.profile-avatar-large {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.2rem;
+  font-weight: 800;
+  margin: 0 auto 12px;
+}
+
+.profile-name {
+  font-size: 1.3rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.profile-title-text {
+  font-size: 0.85rem;
+  color: var(--red);
+  font-weight: 700;
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.profile-coins-display {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 1rem;
+  color: #f1b900;
+}
+
+.equip-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.equip-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: var(--bg-input);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.equip-chip:hover {
+  border-color: var(--border-hover);
+}
+
+.equip-chip.active {
+  border-color: var(--red);
+  background: var(--red-glow);
+}
+
+.equip-chip .chip-icon {
+  font-size: 1.2rem;
+}
+
+@media (max-width: 768px) {
+  .shop-grid {
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  }
+}
